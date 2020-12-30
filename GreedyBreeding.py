@@ -13,7 +13,7 @@ while True:
 # print(data)
 
 count = 0
-bestValue = [[0, 0, 0, 0, 0]]
+bestPairs = [[0, 0, 0, 0, 0]]
 
 # topleft = data.at[data.index[R1], data.columns[C1]]
 # topright = data.at[data.index[R1], data.columns[C2]]
@@ -33,16 +33,21 @@ for R1 in range(23):
 
             while C2 < 16:
 
-                avgVal1 = (data.at[data.index[R1], data.columns[C1]] + data.at[data.index[R2], data.columns[C2]]) / 2
-                avgVal2 = (data.at[data.index[R1], data.columns[C2]] + data.at[data.index[R2], data.columns[C1]]) / 2
-                valDifference = abs(avgVal1 - avgVal2)
-                print('New Best Value at', R1, C1, R2, C2, '   ', valDifference, 'coins')
+                mainDiagonal = data.at[data.index[R1], data.columns[C1]] + data.at[data.index[R2], data.columns[C2]]
+                counterDiagonal = data.at[data.index[R1], data.columns[C2]] + data.at[data.index[R2], data.columns[C1]]
+                avgProfit = 0
 
-                if valDifference > bestValue[0][4]:
-                    bestValue = [[R1, C1, R2, C2, valDifference]]
-                    print('New Best Value at', R1, C1, R2, C2, '   ', valDifference, 'coins')
-                elif valDifference == bestValue[0][4]:
-                    bestValue.append([R1, C1, R2, C2, valDifference])
+                if mainDiagonal < counterDiagonal:
+                    avgProfit = ((mainDiagonal + counterDiagonal) / 4) - int(mainDiagonal / 4)
+                else:
+                    avgProfit = ((mainDiagonal + counterDiagonal) / 4) - int(counterDiagonal / 4)
+
+
+                if avgProfit > bestPairs[0][4]:
+                    bestPairs = [[R1, C1, R2, C2, avgProfit]]
+                    print('New Best Average Profit at', R1, C1, R2, C2, '   ', avgProfit, 'coins')
+                elif avgProfit == bestPairs[0][4]:
+                    bestPairs.append([R1, C1, R2, C2, avgProfit])
 
                 C2 += 1
                 count += 1
@@ -50,15 +55,15 @@ for R1 in range(23):
             R2 += 1
 
 print()
-print(count, 'breeding pairs evaluated\nBest Value: +' + str(bestValue[0][4]), '\n')
+print(count, 'breeding pairs evaluated\nBest Average Profit: ' + str(bestPairs[0][4]), 'coins\n')
 
-print('All +' + str(bestValue[0][4]), 'coin pairings\n-------------------------------------------')
-for breedingPair in bestValue:
+print('All', str(bestPairs[0][4]), 'coin Profit Pairings\n-------------------------------------------')
+for breedingPair in bestPairs:
 
     pair1 = data.at[data.index[breedingPair[0]], data.columns[breedingPair[1]]] + data.at[data.index[breedingPair[2]], data.columns[breedingPair[3]]]
     pair2 = data.at[data.index[breedingPair[0]], data.columns[breedingPair[3]]] + data.at[data.index[breedingPair[2]], data.columns[breedingPair[1]]]
 
     if pair1 < pair2:
-        print(data.index[breedingPair[0]], data.columns[breedingPair[1]], breedName, '+', data.index[breedingPair[2]], data.columns[breedingPair[3]], breedName)
+        print(data.index[breedingPair[0]], data.columns[breedingPair[1]], breedName, '+', data.index[breedingPair[2]], data.columns[breedingPair[3]], breedName, "\nCost to breed:", int(pair1 / 4))
     elif pair2 < pair1:
-        print(data.index[breedingPair[0]], data.columns[breedingPair[3]], breedName, '+', data.index[breedingPair[2]], data.columns[breedingPair[1]], breedName)
+        print(data.index[breedingPair[0]], data.columns[breedingPair[3]], breedName, '+', data.index[breedingPair[2]], data.columns[breedingPair[1]], breedName, "\nCost to breed:", int(pair2 / 4))
